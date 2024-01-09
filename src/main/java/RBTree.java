@@ -43,7 +43,7 @@ public class RBTree<T extends Comparable<T>> {
     private void fixRedBlackPropertiesAfterInsert(Node node) {
         // go up to parent
         Node parent = node.parent;
-        // Check for Rule 1 and 2
+        // Case 1 & 2: Parent is null we we reached root
         if(parent == null) {
             node.color = false;
             return;
@@ -58,34 +58,36 @@ public class RBTree<T extends Comparable<T>> {
 
 
         Node uncle = getUncle(parent);
-        // Case 3: Both Parent and Uncle are red
+        // Case 3: Both Parent and Uncle are red -> recolor parent, grandparent and uncle
         if(uncle != null && uncle.color == true) {
             parent.color = false;
             uncle.color = false;
             grandparent.color = true;
-
+            // We might need to call recursively for grandparent which is now red
             fixRedBlackPropertiesAfterInsert(grandparent);
         } else if (parent == grandparent.left) {
-            // Case 4: Parent red and right child of grandparent, inner child
+            // Case 4a: Parent red, Uncle black and node is left->right child of grandparent, inner child
             if(node == parent.right) {
                 // step 1: rotate the subtree of parent to the right
                 rotateLeft(parent);
                 // update parent because we have rotated the subtree
                 parent = node;
             }
-            // step 2: rotate the subtree of grandparent to the left
+            // Case 5a: Uncle is black and node is left->left "outer child", rotate the subtree of grandparent to the left
             rotateRight(grandparent);
-
+            //recolor parent & grandparent
             parent.color = false;
             grandparent.color = true;
         } else {
+            // Case 4b: Parent red, Uncle black and node is right->left child of grandparent, inner child
             if(node == parent.left) {
                 rotateRight(parent);
 
                 parent = node;
             }
+            // Case 5b: Uncle is black and node is right->right "outer child", rotate the subtree of grandparent to the left
             rotateLeft(grandparent);
-
+            //recolor parent & grandparent
             parent.color = false;
             grandparent.color = true;
         }
