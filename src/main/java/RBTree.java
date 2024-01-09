@@ -64,27 +64,27 @@ public class RBTree<T extends Comparable<T>> {
             uncle.color = false;
             grandparent.color = true;
 
-            fixRedBlackPropertiesAfterInsert(parent.parent);
-        } else if (parent == grandparent.right) {
+            fixRedBlackPropertiesAfterInsert(grandparent);
+        } else if (parent == grandparent.left) {
             // Case 4: Parent red and right child of grandparent, inner child
-            if(node == parent.left) {
+            if(node == parent.right) {
                 // step 1: rotate the subtree of parent to the right
-                rotateRight(parent);
+                rotateLeft(parent);
                 // update parent because we have rotated the subtree
                 parent = node;
             }
             // step 2: rotate the subtree of grandparent to the left
-            rotateLeft(grandparent);
+            rotateRight(grandparent);
 
             parent.color = false;
             grandparent.color = true;
         } else {
-            if(node == parent.right) {
-                rotateLeft(parent);
+            if(node == parent.left) {
+                rotateRight(parent);
 
                 parent = node;
             }
-            rotateRight(grandparent);
+            rotateLeft(grandparent);
 
             parent.color = false;
             grandparent.color = true;
@@ -92,7 +92,7 @@ public class RBTree<T extends Comparable<T>> {
     }
 
     public String toDotFile() {
-        String header = "digraph G {\ngraph [ratio=.48];\nnode [style=filled, color=black, shape=circle, width=.6, fontname=Helvetica, fontweight=bold, fontcolor=white, fontsize=24, fixedsize=true];\n";
+        String header = "digraph G {\ngraph [ratio=.48];\nnode [style=filled, color=black, shape=circle, width=.6, fontname=Helvetica, fontweight=bold, fontcolor=white, fontsize=24, fixedsize=true, ordering=\"out\"];\n";
         StringBuilder dotfile = new StringBuilder(header);
         StringBuilder nilValues = new StringBuilder();
         StringBuilder connections = new StringBuilder();
@@ -106,12 +106,12 @@ public class RBTree<T extends Comparable<T>> {
         }
         while(!queue.isEmpty()) {
             node = queue.getFirst();
+            if(node.color == true) {
+                redNodes.append(String.format("%s,", node.data));
+            }
             queue.pop();
             if(node.left != null) {
                 connections.append(String.format("%s -> %s;\n", node.data, node.left.data));
-                if(node.color == true) {
-                    redNodes.append(String.format("%s,", node.left.data));
-                }
                 queue.offer(node.left);
             } else {
                 String name = String.format("n%d", nilCounter);
@@ -121,9 +121,6 @@ public class RBTree<T extends Comparable<T>> {
             }
             if(node.right != null) {
                 connections.append(String.format("%s -> %s;\n", node.data, node.right.data));
-                if(node.color == true) {
-                    redNodes.append(String.format("%s,", node.right.data));
-                }
                 queue.offer(node.right);
             } else {
                 String name = String.format("n%d", nilCounter);
