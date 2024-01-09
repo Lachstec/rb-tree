@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x #echo on
 for i in {0..14}
 do
   dot -Tsvg "output/rbtree-$i.dot" > "svgs/rbtree-$i.svg"
