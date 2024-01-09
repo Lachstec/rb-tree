@@ -1,3 +1,5 @@
+import java.util.ArrayDeque;
+
 /**
  * RBTree represents a Red-Black-Tree, a binary search tree that allows
  * fast access to stored elements. This is accomplished by following five rules:
@@ -87,6 +89,58 @@ public class RBTree<T extends Comparable<T>> {
             parent.color = false;
             grandparent.color = true;
         }
+    }
+
+    public String toDotFile() {
+        String header = "digraph G {\ngraph [ratio=.48];\nnode [style=filled, color=black, shape=circle, width=.6, fontname=Helvetica, fontweight=bold, fontcolor=white, fontsize=24, fixedsize=true];\n";
+        StringBuilder dotfile = new StringBuilder(header);
+        StringBuilder nilValues = new StringBuilder();
+        StringBuilder connections = new StringBuilder();
+        StringBuilder redNodes = new StringBuilder();
+
+        Node node;
+        int nilCounter = 1;
+        ArrayDeque<Node> queue = new ArrayDeque<>();
+        if(this.root != null) {
+            queue.offer(root);
+        }
+        while(!queue.isEmpty()) {
+            node = queue.getFirst();
+            queue.pop();
+            if(node.left != null) {
+                connections.append(String.format("%s -> %s;\n", node.data, node.left.data));
+                if(node.color == true) {
+                    redNodes.append(String.format("%s,", node.left.data));
+                }
+                queue.offer(node.left);
+            } else {
+                String name = String.format("n%d", nilCounter);
+                nilValues.append(name).append(",");
+                connections.append(String.format("%s -> %s;\n", node.data, name));
+                nilCounter += 1;
+            }
+            if(node.right != null) {
+                connections.append(String.format("%s -> %s;\n", node.data, node.right.data));
+                if(node.color == true) {
+                    redNodes.append(String.format("%s,", node.right.data));
+                }
+                queue.offer(node.right);
+            } else {
+                String name = String.format("n%d", nilCounter);
+                nilValues.append(name).append(",");
+                connections.append(String.format("%s -> %s;\n", node.data, name));
+                nilCounter += 1;
+            }
+        }
+        redNodes.deleteCharAt(redNodes.length() - 1);
+        redNodes.append("\n[fillcolor=red];\n");
+        nilValues.deleteCharAt(nilValues.length() - 1);
+        nilValues.append("\n[label=\"NIL\", shape=record, width=.4,height=.25, fontsize=16];\n");
+        dotfile.append(redNodes);
+        dotfile.append(nilValues);
+        dotfile.append(connections);
+        dotfile.append("\n}");
+        return dotfile.toString();
     }
 
     private Node getUncle(Node parent) {

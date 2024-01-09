@@ -8,6 +8,7 @@ public class Main {
         for(int i : testdata) {
             tree.insert(i);
         }
+        System.out.println(tree.toDotFile());
     }
 
     private static int[] getTestData() {
