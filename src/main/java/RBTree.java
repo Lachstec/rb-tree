@@ -129,8 +129,10 @@ public class RBTree<T extends Comparable<T>> {
                 nilCounter += 1;
             }
         }
-        redNodes.deleteCharAt(redNodes.length() - 1);
-        redNodes.append("\n[fillcolor=red];\n");
+        if(!redNodes.isEmpty()) {
+            redNodes.deleteCharAt(redNodes.length() - 1);
+            redNodes.append("\n[fillcolor=red];\n");
+        }
         nilValues.deleteCharAt(nilValues.length() - 1);
         nilValues.append("\n[label=\"NIL\", shape=record, width=.4,height=.25, fontsize=16];\n");
         dotfile.append(redNodes);
