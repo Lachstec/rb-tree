@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
@@ -17,12 +19,14 @@ public class Main {
                 writeToFile(tree.toDotFile(), i);
             } catch (IOException ex) {
                 System.out.println("error writing to files");
+                //noinspection CallToPrintStackTrace
                 ex.printStackTrace();
             }
         }
     }
 
     private static void writeToFile(String dotfile, int number) throws IOException {
+        Files.createDirectories(Paths.get("./output"));
         File file = new File(String.format(filename, number));
         FileOutputStream fos = new FileOutputStream(file);
         byte[] strBytes = dotfile.getBytes();
